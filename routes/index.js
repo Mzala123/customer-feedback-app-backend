@@ -14,6 +14,7 @@ const ctrlPerson = require('../controllers/person')
 
 router.post('/register', ctrlAuth.register_user)
 router.post('/login', ctrlAuth.login)
+router.get('/employee_list', ctrlAuth.employee_list)
 
 // end of auth end points
 

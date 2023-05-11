@@ -41,3 +41,4 @@ process.on('SIGINT', function(){
 });
 
 require('./person')
+require('./users')

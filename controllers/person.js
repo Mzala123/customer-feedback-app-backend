@@ -14,28 +14,35 @@ module.exports.create_person_details = async (req, res)=>{
             sendJSONresponse(res, 404, {"message":"please fill in all required fields"})
     }
 
-    Person.insertMany({
-        nationalId : req.body.nationalId,
-        firstname : req.body.firstname,
-        lastname : req.body.lastname,
-        gender : req.body.gender,
-        email : req.body.email,
-        phonenumber : req.body.phonenumber,
-        dob : req.body.dob,
-        //person.age = 
-        profile_photo : req.body.profile_photo,
-        address : req.body.address,
-        place_residence : req.body.place_residence,
-        current_city : req.body.current_city
-    }
-    ).then((person)=>{
-        sendJSONresponse(res, 201, {"message":"Person record created", person})
-    }).catch((error)=>{
-        sendJSONresponse(res, 404, {"err":error, "message":"Failed to create a person record"})
+    var person = Person()
+    person.nationalId = req.body.nationalId
+    person.firstname = req.body.firstname
+    person.lastname = req.body.lastname
+    person.gender = req.body.gender
+    person.phonenumber = req.body.phonenumber
+    person.email = req.body.email
+    person.dob= req.body.dob
+
+    person.save(function(err){
+        if (err) {
+            sendJSONresponse(res, 404, { "err": err, "message": "Failed to create patient record" })
+          } else {
+            sendJSONresponse(res, 201, { "message": "person record created" });
+      
+          }
     })
+    
      
 }
 
 module.exports.get_list_person = (req, res)=>{
+            Person
+            .find({})
+            .exec()
+            .then(function(person){
+                sendJSONresponse(res, 200, person)
+            }).catch((err)=>{
+                sendJSONresponse(res, 404, err)
+            })
 
 }
