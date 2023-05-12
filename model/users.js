@@ -24,12 +24,13 @@ var userSchema = new mongoose.Schema({
    user_type: {type: String},
    last_login: {type: Date},
    person_no:{type:String, required:true},
+
    hash: String,
    salt: String
    
 })
 
-userSchema.methods.setPassword = (password)=>{
+userSchema.methods.setPassword = function(password){
     this.salt = crypto.randomBytes(16).toString('hex')
     this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, 'sha512').toString('base64'); 
 }

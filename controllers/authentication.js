@@ -4,6 +4,7 @@ var User =mongoose.model('User')
 var passport = require('passport')
 //var {urid} = require('urid')
 const { randomBytes } = require('crypto');
+var nodemailer = require("nodemailer")
 
 
 
@@ -12,10 +13,22 @@ var sendJSONresponse = function (res, status, content) {
     res.json(content)
 }
 
-module.exports.register_user = async(req, res)=>{
+var transporter = nodemailer.createTransport({
+    service:'gmail',
+    auth:{
+        type:'OAuth2',
+        user: process.env.MAIL_USERNAME,
+        pass: process.env.MAIL_PASSWORD,
+        clientId: process.env.CLIENTID,
+        clientSecret: process.env.CLIENT_SECRET,
+        refreshToken: process.env.REFRESH_TOKEN
+    }
+})
+
+module.exports.register_user = (req, res)=>{
     if(!req.body.national_id || !req.body.first_name || !req.body.last_name || !req.body.gender
          || !req.body.dob || !req.body.email){
-            sendJSONresponse(res, 404, {"message":"please fill in all required fields"})
+            sendJSONresponse(res, 404, {"message":"please fill in all required fields!"})
     }
 
     var user = new User()
@@ -35,6 +48,13 @@ module.exports.register_user = async(req, res)=>{
     user.place_residence = req.body.place_residence
     user.current_city = req.body.current_city
     user.user_type = req.body.user_type
+
+    let mailOptions = {
+        from: 'zackxbaby@gmail.com',
+        to: req.body.email,
+        subject: "User account credentials",
+        text: 'username: '+req.body.email +'\r\nuser password: '+password
+    }
     
     User
       .findOne({email: req.body.email})
@@ -43,7 +63,8 @@ module.exports.register_user = async(req, res)=>{
         if(user_detail){
             sendJSONresponse(res, 200, {"message":"User or Person wich such email already exists"})
         }else{
-            if(req.body.user_type === 'Enquiry Personnel' || req.body.user_type === 'Admin'){
+
+             if(req.body.user_type === 'Enquiry Personnel' || req.body.user_type === 'Admin'){
               
                let id =  Math.random(36).toString().toUpperCase().slice(-8) //+ randomBytes(6).toString('hex')+ new Date().getTime();
                let unique = true
@@ -56,8 +77,9 @@ module.exports.register_user = async(req, res)=>{
 
                var is_employee = true
                user.is_employee = is_employee
-
                user.person_no = id
+
+               
               
                user.save(function(err){
                 var token
@@ -65,11 +87,20 @@ module.exports.register_user = async(req, res)=>{
                     sendJSONresponse(res, 400, err)
                 }else{
                     token = user.generateJwt()
-                    sendJSONresponse(res, 201,{"token":token, "user":user})
+                    //sendJSONresponse(res, 201,{"token":token, "user":user})
+
+                    transporter.sendMail(mailOptions, function(err, data){
+                        if(err){
+                            sendJSONresponse(res, 404, err)
+                        }else{
+                            sendJSONresponse(res, 201, {"message":"User Account created, check your email for credentials", 'user':user})
+                        }
+                     })
                 }
+
                })
-                
-            }else{
+            }
+            else{
                 var is_customer = true
                 user.is_customer = is_customer
                 var user_type = "Customer"
@@ -90,12 +121,23 @@ module.exports.register_user = async(req, res)=>{
                         sendJSONresponse(res, 400, err)
                     }else{
                         token = user.generateJwt()
-                        sendJSONresponse(res, 201,{"token":token, "user":user})
+                        //sendJSONresponse(res, 201,{"token":token, "user":user})
+
+                            transporter.sendMail(mailOptions, function(err, data){
+                                if(err){
+                                    sendJSONresponse(res, 404, err)
+                                }else{
+                                    sendJSONresponse(res, 201, {"message":"User Account created check your email for credentials", 'user':user})
+                                }
+                            })
+                        
                     }
                    })
             }
-        }
-      })
+        
+      }
+      
+    })
 
 
 }

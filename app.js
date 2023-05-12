@@ -11,8 +11,7 @@ require('./config/passport')
 
 var routesApi = require('./routes/index');
 var usersRouter = require('./routes/users');
-
-const passport = require('passport')
+var passport = require('passport')
 
 var app = express();
 app.use(cors())
@@ -27,6 +26,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(passport.initialize())
 app.use('/api', routesApi);
 app.use('/users', usersRouter);
 
