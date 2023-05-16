@@ -4,7 +4,8 @@ var User =mongoose.model('User')
 var passport = require('passport')
 //var {urid} = require('urid')
 const { randomBytes } = require('crypto');
-var nodemailer = require("nodemailer")
+var nodemailer = require("nodemailer");
+const { send } = require('process');
 
 
 
@@ -79,8 +80,6 @@ module.exports.register_user = (req, res)=>{
                user.is_employee = is_employee
                user.person_no = id
 
-               
-              
                user.save(function(err){
                 var token
                 if(err){
@@ -191,4 +190,130 @@ module.exports.employee_list = function(req, res){
             sendJSONresponse(res, 200, user)
         }
       })
+}
+
+module.exports.read_one_user = (req, res)=>{
+    if(!req.params.userid){
+        sendJSONresponse(res, 404,{"message":"user id required"})
+    }else if(req.params && req.params.userid){
+        User
+         .findById(req.params.userid)
+         .exec((err, user)=>{
+            if(!user){
+                sendJSONresponse(res, 404, {"message":"User not found!"})
+                return
+            }else if(err){
+                sendJSONresponse(res, 404, err)
+                return
+            }else{
+             sendJSONresponse(res, 200, user)
+            }
+         })
+    }else{
+       sendJSONresponse(res, 404, {"message":"not found, user id required"})
+    }
+}
+
+module.exports.update_user =(req, res)=>{
+
+}
+
+module.exports.update_usertype = (req, res)=>{
+    let user_type = req.body.user_type
+    if(!req.params.userid){
+        sendJSONresponse(res, 404, {"message":"Not found, user id is required"})
+        return
+    }else if(req.params && req.params.userid){
+        User
+         .updateOne({_id:req.params.userid},
+            {
+                $set:{
+                    user_type: user_type
+                }
+            }
+        ).exec(function(err){
+            if(err){
+                sendJSONresponse(res, 404, err)
+            }else{
+                sendJSONresponse(res, 200, {"message":"User record updated successfully!"})
+            }
+        })
+    } 
+    
+}
+
+module.exports.update_user_password = (req, res)=>{
+    if(!req.params.userid){
+        sendJSONresponse(res, 404, {"message":"Not found, user id is required"})
+        return
+    }
+    User
+     .findById(req.params.userid)
+     .exec(function(err, user){
+         if(err){
+             sendJSONresponse(res, 404, err)
+             return
+         }else if(!user){
+             sendJSONresponse(res, 404, {"message":"userid not found"})
+             return
+         }else{
+            user.setPassword(req.body.password)
+         }
+       user.save(function(err){
+           if(err){
+               sendJSONresponse(res, 404, err)
+           }else{
+              sendJSONresponse(res, 200, {"message":"password updated successfully"})
+           }
+       })
+     })
+}
+
+module.exports.remove_user = (req, res)=>{
+      let userid = req.params.userid
+      if(userid){
+        User
+         .findByIdAndRemove(userid)
+         .exec(function(err, user){
+            if(err){
+                sendJSONresponse(res, 404, err)
+            }else{
+                sendJSONresponse(res, 204, null)
+            }
+         })
+      }else{
+        sendJSONresponse(res, 404, {"message":"userid is required"})
+      }
+}
+
+module.exports.read_users_count_by_userrole = (req, res)=>{
+    User
+     .aggregate([
+        {$unwind:'$user_type'},
+        {
+            $group:{
+                _id:'$user_type',
+                user_type_count:{$count:{}}
+            }
+        },
+        {$sort:{'user_type_count':1}}
+     ]).exec(function(err, user){
+        if(err){
+            sendJSONresponse(res, 404, err)
+        }else{
+            sendJSONresponse(res, 200, user)
+        }
+     })
+}
+
+module.exports.read_count_all_users_in_system=(req,res)=>{
+     User
+     .countDocuments({})
+     .exec((err,user)=>{
+       if(err){
+         sendJSONresponse(res, 401, err)
+       }else if(user){
+          sendJSONresponse(res, 200, {"count":user})
+       }
+     })
 }
