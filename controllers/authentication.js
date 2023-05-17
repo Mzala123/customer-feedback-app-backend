@@ -169,7 +169,7 @@ module.exports.login = (req, res)=>{
 
 module.exports.employee_list = function(req, res){
     User
-      .find({is_employee:true},{
+      .find({user_type:{$ne:'Admin'}},{
         national_id:1,
         first_name:1,
         last_name:1,
