@@ -157,7 +157,7 @@ module.exports.login = (req, res)=>{
             token = user.generateJwt()
             sendJSONresponse(res, 200,{
                 "token":token,
-                "name":user.first_name+" "+user.last_name, "email":user.email, "_id":user._id
+                "user":user
             })
         }else{
             sendJSONresponse(res, 401, {"message":info})
@@ -306,7 +306,7 @@ module.exports.read_users_count_by_userrole = (req, res)=>{
      })
 }
 
-module.exports.read_count_all_users_in_system=(req,res)=>{
+module.exports.read_count_all_users_in_system = (req,res)=>{
      User
      .countDocuments({})
      .exec((err,user)=>{
@@ -315,5 +315,23 @@ module.exports.read_count_all_users_in_system=(req,res)=>{
        }else if(user){
           sendJSONresponse(res, 200, {"count":user})
        }
+     })
+}
+
+module.exports.read_users_by_gender = (req, res)=>{
+    User
+     .aggregate([
+        {$group:{
+             _id:'$gender',
+             countByGender: {$count:{}}
+        }
+       },
+       {$sort: {'countByGender':1}}
+     ]).exec(function(err, userGender){
+        if(err){
+            sendJSONresponse(res, 404, err)
+        }else{
+            sendJSONresponse(res, 200, userGender)
+        }
      })
 }
