@@ -197,16 +197,32 @@ module.exports.read_one_user = (req, res)=>{
         sendJSONresponse(res, 404,{"message":"user id required"})
     }else if(req.params && req.params.userid){
         User
-         .findById(req.params.userid)
-         .exec((err, user)=>{
+         .aggregate([
+            {$match: {_id: mongoose.Types.ObjectId(req.params.userid)}},
+            {
+                $project:{
+                    national_id:1,
+                    first_name:1,
+                    last_name:1,
+                    gender:1,
+                    age: { $dateDiff: { startDate: "$dob", endDate: "$$NOW", unit: "year" } },
+                    dob: { $dateToString: { format: "%Y-%m-%d", date: "$dob" } },
+                    profile_photo:1,
+                    current_city:1,
+                    phone_number:1,
+                    email:1,
+                    user_type:1,
+                    person_no:1,
+                    address:1
+                }
+            }
+         ]).exec(function(err, user){
             if(!user){
-                sendJSONresponse(res, 404, {"message":"User not found!"})
-                return
+             sendJSONresponse(res, 404, {"message":"user not found"})
             }else if(err){
-                sendJSONresponse(res, 404, err)
-                return
+               sendJSONresponse(res, 404, err)
             }else{
-             sendJSONresponse(res, 200, user)
+                sendJSONresponse(res, 200, user[0])
             }
          })
     }else{
