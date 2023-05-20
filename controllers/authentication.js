@@ -22,7 +22,8 @@ var transporter = nodemailer.createTransport({
         pass: process.env.MAIL_PASSWORD,
         clientId: process.env.CLIENTID,
         clientSecret: process.env.CLIENT_SECRET,
-        refreshToken: process.env.REFRESH_TOKEN
+        refreshToken: process.env.REFRESH_TOKEN,
+        accessToken: process.env.ACCESS_TOKEN
     }
 })
 
@@ -86,8 +87,7 @@ module.exports.register_user = (req, res)=>{
                     sendJSONresponse(res, 400, err)
                 }else{
                     token = user.generateJwt()
-                    //sendJSONresponse(res, 201,{"token":token, "user":user})
-
+                  
                     transporter.sendMail(mailOptions, function(err, data){
                         if(err){
                             sendJSONresponse(res, 404, err)
@@ -120,8 +120,6 @@ module.exports.register_user = (req, res)=>{
                         sendJSONresponse(res, 400, err)
                     }else{
                         token = user.generateJwt()
-                        //sendJSONresponse(res, 201,{"token":token, "user":user})
-
                             transporter.sendMail(mailOptions, function(err, data){
                                 if(err){
                                     sendJSONresponse(res, 404, err)
