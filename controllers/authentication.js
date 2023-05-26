@@ -230,6 +230,54 @@ module.exports.read_one_user = (req, res)=>{
 
 module.exports.update_user =(req, res)=>{
 
+    if(!req.body.national_id || !req.body.first_name || !req.body.last_name || !req.body.gender
+        || !req.body.dob || !req.body.email){
+           sendJSONresponse(res, 404, {"message":"please fill in all required fields!"})
+   }
+
+   let national_id = req.body.national_id
+   let first_name = req.body.first_name
+   let email = req.body.email
+   let last_name = req.body.last_name
+   let gender = req.body.gender
+   let dob = req.body.dob
+   let phone_number = req.body.phone_number
+   let profile_photo= req.body.profile_photo
+   let address = req.body.address
+   let place_residence = req.body.place_residence
+   let current_city = req.body.current_city
+  
+
+    if(!req.params.userid){
+      sendJSONresponse(res, 404, {"message":"User id is required"})
+    }else if(req.params && req.params.userid){
+
+        User.updateOne({_id: req.params.userid},
+            {
+                $set:{
+                    national_id: national_id,
+                    first_name: first_name,
+                    last_name: last_name,
+                    email: email,
+                    gender: gender,
+                    dob: dob,
+                    phone_number: phone_number,
+                    profile_photo: profile_photo,
+                    address: address,
+                    place_residence: place_residence,
+                    current_city: current_city
+                }
+
+            }
+            ).exec(function(err){
+                 if(err){
+                    sendJSONresponse(res, 404, err)
+                 }else{
+                    sendJSONresponse(res, 200, {"message":"user record updated!"})
+                 }
+            })
+
+    }
 }
 
 module.exports.update_usertype = (req, res)=>{
