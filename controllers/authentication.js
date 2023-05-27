@@ -190,6 +190,32 @@ module.exports.employee_list = function(req, res){
       })
 }
 
+module.exports.list_archived_accounts = (req, res)=>{
+    User
+     .find({user_type:{$ne:'Admin'}}, {is_deleted:'true'},
+     {
+        national_id:1,
+        first_name:1,
+        last_name:1,
+        gender:1,
+        age:{ $dateDiff: { startDate: "$dob", endDate: "$$NOW", unit: "year" } },
+        dob: { $dateToString:{format: "%Y-%m-%d", date: "$dob" } },
+        profile_photo:1,
+        address:1,
+        current_city:1,
+        email:1,
+        user_type:1,
+        person_no:1
+     }).exec(function(err, user){
+        if(err){
+            sendJSONresponse(res, 404, err)
+        }else{
+            sendJSONresponse(res, 200, user)
+        }
+     })
+     
+}
+
 module.exports.read_one_user = (req, res)=>{
     if(!req.params.userid){
         sendJSONresponse(res, 404,{"message":"user id required"})
@@ -208,6 +234,7 @@ module.exports.read_one_user = (req, res)=>{
                     profile_photo:1,
                     current_city:1,
                     phone_number:1,
+                    place_residence:1,
                     email:1,
                     user_type:1,
                     person_no:1,

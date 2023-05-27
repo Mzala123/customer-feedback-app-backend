@@ -15,10 +15,12 @@ const ctrlPerson = require('../controllers/person')
 router.post('/register', ctrlAuth.register_user)
 router.post('/login', ctrlAuth.login)
 router.get('/employee_list', ctrlAuth.employee_list)
-
+router.get('/list_archived_accounts',ctrlAuth.list_archived_accounts)
 router.get('/read_one_user/:userid', ctrlAuth.read_one_user)
+
 router.put('/update_user/:userid', ctrlAuth.update_user)
 router.put('/update_usertype/:userid', ctrlAuth.update_usertype)
+
 router.put('/update_user_password/:userid', ctrlAuth.update_user_password)
 
 router.delete('/remove_user/:userid', ctrlAuth.remove_user)

@@ -24,7 +24,7 @@ var userSchema = new mongoose.Schema({
    user_type: {type: String},
    last_login: {type: Date},
    person_no:{type:String, required:true},
-   is_deleted:{type: Boolean, 'default':false},
+   is_deleted:{type: Boolean, 'default':'false'},
    hash: String,
    salt: String
    
