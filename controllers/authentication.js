@@ -2,7 +2,7 @@ var mongoose = require('mongoose')
 const { token } = require('morgan')
 var User =mongoose.model('User')
 var passport = require('passport')
-//var {urid} = require('urid')
+
 const { randomBytes } = require('crypto');
 var nodemailer = require("nodemailer");
 const { send } = require('process');

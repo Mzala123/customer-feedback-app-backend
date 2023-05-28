@@ -9,6 +9,7 @@ router.get('/', function(req, res, next) {
 
 const ctrlAuth = require('../controllers/authentication')
 const ctrlPerson = require('../controllers/person')
+const ctrlFeedBack = require('../controllers/feedback')
 
 //create users from personal information and login end points
 
@@ -29,12 +30,18 @@ router.get('/read_users_count_by_userrole', ctrlAuth.read_users_count_by_userrol
 router.get('/read_users_by_gender', ctrlAuth.read_users_by_gender)
 router.get('/read_count_all_users_in_system', ctrlAuth.read_count_all_users_in_system)
 
-
-
 // end of auth end points
 
 // create person end points 
 router.post('/person', ctrlPerson.create_person_details)
 router.get('/person', ctrlPerson.get_list_person);
+
+
+// Feedback end points
+router.post('/feedback', ctrlFeedBack.create_feedback)
+router.get('/feedback_unresponded_list', ctrlFeedBack.feedback_unresponded_list)
+router.get('/feedback_responded_list', ctrlFeedBack.feedback_responded_list)
+router.get('/my_feedback_list/:userId', ctrlFeedBack.my_feedback_list)
+
 
 module.exports = router;
