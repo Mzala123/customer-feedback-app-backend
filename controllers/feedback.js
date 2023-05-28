@@ -93,7 +93,7 @@ module.exports.feedback_unresponded_list = (req, res)=>{
         if(err){
             sendJSONresponse(res, 401, err)
         }else{
-            sendJSONresponse(res, 200, data[0])
+            sendJSONresponse(res, 200, data)
         }
      })
     
@@ -116,14 +116,6 @@ module.exports.my_feedback_list = (req, res)=>{
                 userId:1
             }
         }
-        // {
-        //     $lookup:{
-        //         from: 'users',
-        //         localField:'userId',
-        //         foreignField:'_id',
-        //         as:'feedBackDocs'
-        //     }
-        // }
      ]).exec((err, data)=>{
         if(err){
             sendJSONresponse(res, 401, err)

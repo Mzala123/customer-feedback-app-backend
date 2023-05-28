@@ -15,7 +15,7 @@ passport.use(new LocalStrategy({
                 message: "incorrect username"
             })
         }
-        console.log(user.salt);
+        //console.log(user.salt);
         if(!user.validPassword(password)){
             return done(null, false,{
                 message: "incorrect password"
