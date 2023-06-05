@@ -447,3 +447,7 @@ module.exports.read_users_by_gender = (req, res)=>{
         }
      })
 }
+
+module.exports.unarchive_user_accounts=(req, res)=>{
+
+}
