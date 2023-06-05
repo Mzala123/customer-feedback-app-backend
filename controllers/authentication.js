@@ -167,7 +167,7 @@ module.exports.login = (req, res)=>{
 
 module.exports.employee_list = function(req, res){
     User
-      .find({user_type:{$ne:'Admin'}},{
+      .find({is_deleted:false, user_type:{$ne:'Admin'}},{
         national_id:1,
         first_name:1,
         last_name:1,
@@ -192,7 +192,7 @@ module.exports.employee_list = function(req, res){
 
 module.exports.list_archived_accounts = (req, res)=>{
     User
-     .find({user_type:{$ne:'Admin'}}, {is_deleted:'true'},
+     .find({is_deleted:true, user_type:{$ne:'Admin'} },
      {
         national_id:1,
         first_name:1,
@@ -205,7 +205,8 @@ module.exports.list_archived_accounts = (req, res)=>{
         current_city:1,
         email:1,
         user_type:1,
-        person_no:1
+        person_no:1,
+        is_deleted:1
      }).exec(function(err, user){
         if(err){
             sendJSONresponse(res, 404, err)
@@ -356,6 +357,28 @@ module.exports.update_user_password = (req, res)=>{
            }
        })
      })
+}
+
+module.exports.remove_user_via_update = (req, res)=>{
+    
+    if(!req.params.userid){
+        sendJSONresponse(res, 404, {"message":"Not found, user id is required"})
+        return
+    }else if(req.params && req.params.userid){
+        User
+         .updateOne({_id:req.params.userid},
+            {
+                $set:{
+                    is_deleted: true
+                } 
+            }).exec((err, user)=>{
+                if(err){
+                    sendJSONresponse(res, 404, err)
+                }else{
+                    sendJSONresponse(res, 200, {"message":"is deleted is false now!"})
+                }
+            })    
+    }
 }
 
 module.exports.remove_user = (req, res)=>{

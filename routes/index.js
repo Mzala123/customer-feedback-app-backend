@@ -25,6 +25,7 @@ router.put('/update_usertype/:userid', ctrlAuth.update_usertype)
 router.put('/update_user_password/:userid', ctrlAuth.update_user_password)
 
 router.delete('/remove_user/:userid', ctrlAuth.remove_user)
+router.put('/remove_user_via_update/:userid', ctrlAuth.remove_user_via_update)
 
 router.get('/read_users_count_by_userrole', ctrlAuth.read_users_count_by_userrole)
 router.get('/read_users_by_gender', ctrlAuth.read_users_by_gender)

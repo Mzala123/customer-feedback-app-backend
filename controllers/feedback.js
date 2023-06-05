@@ -31,6 +31,8 @@ module.exports.create_feedback = (req, res)=>{
             }
 
         })
+
+       
 }
 
 module.exports.feedback_responded_list = (req, res)=>{
@@ -44,7 +46,7 @@ module.exports.feedback_responded_list = (req, res)=>{
                 type:1,
                 title:1,
                 description:1,
-                date_submitted: { $dateToString:{format: "%Y-%m-%d", date: "$date_submitted" } },
+                date_submitted: { $dateToString:{format: "%Y-%m-%d %H:%M:%S", date: "$date_submitted" } },
                 userId:1
             }
         },
@@ -77,7 +79,7 @@ module.exports.feedback_unresponded_list = (req, res)=>{
                 type:1,
                 title:1,
                 description:1,
-                date_submitted: { $dateToString:{format: "%Y-%m-%d", date: "$date_submitted" } },
+                date_submitted: { $dateToString:{format: "%Y-%m-%d %H:%M:%S", date: "$date_submitted" } },
                 userId:1
             }
         },
@@ -88,6 +90,9 @@ module.exports.feedback_unresponded_list = (req, res)=>{
                 foreignField:'_id',
                 as:'feedBackDocs'
             }
+        },
+        {
+            $unwind:"$feedBackDocs"
         }
      ]).exec((err, data)=>{
         if(err){
@@ -112,9 +117,12 @@ module.exports.my_feedback_list = (req, res)=>{
                 type:1,
                 title:1,
                 description:1,
-                date_submitted: { $dateToString:{format: "%Y-%m-%d", date: "$date_submitted" } },
+                date_submitted: { $dateToString:{format: "%Y-%m-%d %H:%M:%S", date: "$date_submitted" } },
                 userId:1
             }
+        },
+        {
+            $unwind:"$feedBackDocs"
         }
      ]).exec((err, data)=>{
         if(err){
