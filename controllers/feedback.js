@@ -100,7 +100,8 @@ module.exports.feedback_responded_list = (req, res)=>{
                 description:1,
                 date_submitted: { $dateToString:{format: "%Y-%m-%d %H:%M:%S", date: "$date_submitted" } },
                 userId:1,
-                is_responded:1
+                is_responded:1,
+                response:1
             }
         },
         {
@@ -110,12 +111,15 @@ module.exports.feedback_responded_list = (req, res)=>{
                 foreignField:'_id',
                 as:'feedBackDocs'
             }
+        },
+        {
+            $unwind:"$feedBackDocs"
         }
      ]).exec((err, data)=>{
         if(err){
             sendJSONresponse(res, 401, err)
         }else{
-            sendJSONresponse(res, 200, data[0])
+            sendJSONresponse(res, 200, data)
         }
      })
 
