@@ -26,6 +26,8 @@ router.put('/update_user_password/:userid', ctrlAuth.update_user_password)
 
 router.delete('/remove_user/:userid', ctrlAuth.remove_user)
 router.put('/remove_user_via_update/:userid', ctrlAuth.remove_user_via_update)
+router.put('/unarchive_user_accounts/:userid', ctrlAuth.unarchive_user_accounts)
+
 
 router.get('/read_users_count_by_userrole', ctrlAuth.read_users_count_by_userrole)
 router.get('/read_users_by_gender', ctrlAuth.read_users_by_gender)
@@ -42,7 +44,10 @@ router.get('/person', ctrlPerson.get_list_person);
 router.post('/feedback', ctrlFeedBack.create_feedback)
 router.get('/feedback_unresponded_list', ctrlFeedBack.feedback_unresponded_list)
 router.get('/feedback_responded_list', ctrlFeedBack.feedback_responded_list)
-router.get('/my_feedback_list/:userId', ctrlFeedBack.my_feedback_list)
+router.get('/my_responded_queries_list/:userId', ctrlFeedBack.my_responded_queries_list)
+router.get('/my_unresponded_queries_list/:userId', ctrlFeedBack.my_unresponded_queries_list)
+router.post('/feedback/:feedbackId/create_response', ctrlFeedBack.create_response)
+
 
 
 module.exports = router;
