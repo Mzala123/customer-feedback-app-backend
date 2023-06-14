@@ -1,6 +1,7 @@
 var mongoose = require('mongoose')
 const { token } = require('morgan')
 var Feedback =mongoose.model('feedback')
+var User = mongoose.model('User')
 
 
 
@@ -262,4 +263,66 @@ module.exports.count_feedbacks_by_type = function(req, res){
                 sendJSONresponse(res, 200, feedback)
             }
            })
+}
+
+module.exports.total_count_customer_by_gender = (req, res)=>{
+        User
+          .aggregate(
+            [
+              {$match:{is_customer:{$eq:true}}},
+              {
+                $group:{
+                    _id:'$gender',
+                    countBytype:{$count:{}},
+                    totalCustomers: {$sum:1}
+                }
+              }, {$sort: {'countBytype':1}}
+            ]
+          ).exec((err, data)=>{
+              if(err){
+                  sendJSONresponse(res, 401, err)
+              }else{
+              const totalCustomers = data.reduce((total, doc) => total + doc.totalCustomers, 0); 
+              const resultWithTotal = [...data, { _id: 'total', countByType: totalCustomers, totalCustomers }];
+              sendJSONresponse(res, 200, resultWithTotal);
+               
+              }
+          })
+}
+
+module.exports.count_feedbacks_by_customer_gender = function(req, res){
+       Feedback
+          .aggregate(
+            [
+                {
+                    $lookup:{
+                        from: 'users',
+                        localField:'userId',
+                        foreignField:'_id',
+                        as:'feedBackDocs'
+                    }
+                },
+                {
+                    $unwind: "$feedBackDocs"
+                },
+                {
+                 $group:{
+                    _id:'$feedBackDocs.gender',
+                    countByGender:{ $count:{}},
+                    totalFeedbacks: { $sum: 1 }
+                 }
+                },
+                {$sort: {'countByGender':-1}},
+               
+            ]
+          ).exec((err, data)=>{
+               if(err){
+                sendJSONresponse(res, 401, err)
+               }else{
+                const totalFeedbacks = data.reduce((total, doc) => total + doc.totalFeedbacks, 0); 
+                const resultWithTotal = [...data, { _id: 'total', countByGender: totalFeedbacks, totalFeedbacks }];
+                sendJSONresponse(res, 200, resultWithTotal);
+              
+               }
+          })
 }
