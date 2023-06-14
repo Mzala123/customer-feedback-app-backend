@@ -48,6 +48,9 @@ router.get('/my_responded_queries_list/:userId', ctrlFeedBack.my_responded_queri
 router.get('/my_unresponded_queries_list/:userId', ctrlFeedBack.my_unresponded_queries_list)
 router.post('/feedback/:feedbackId/create_response', ctrlFeedBack.create_response)
 
+router.get('/count_all_feedbacks', ctrlFeedBack.count_all_feedbacks)
+router.get('/count_feedbacks_by_type', ctrlFeedBack.count_feedbacks_by_type)
+
 
 
 module.exports = router;

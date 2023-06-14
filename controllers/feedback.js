@@ -230,3 +230,36 @@ module.exports.my_unresponded_queries_list = (req, res)=>{
         }
      })
 }
+
+module.exports.count_all_feedbacks = (req, res)=>{
+       Feedback
+         .countDocuments({})
+         .exec((err, feedback)=>{
+            if(err){
+                sendJSONresponse(res, 404, err)
+            }else{
+                sendJSONresponse(res, 200, {"count":feedback})
+            }
+         })
+}
+
+module.exports.count_feedbacks_by_type = function(req, res){
+        Feedback
+          .aggregate(
+            [
+             {$group:{
+                    _id:'$type',
+                    countBytype: {$count:{}}
+               }
+             },
+             {$sort: {'countBytype':1}}
+
+            ]
+           ).exec((err, feedback)=>{
+            if(err){
+                sendJSONresponse(res, 404, err)
+            }else{
+                sendJSONresponse(res, 200, feedback)
+            }
+           })
+}
