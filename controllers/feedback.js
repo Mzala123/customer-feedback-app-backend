@@ -250,17 +250,20 @@ module.exports.count_feedbacks_by_type = function(req, res){
             [
              {$group:{
                     _id:'$type',
-                    countBytype: {$count:{}}
+                    countBytype: {$count:{}},
+                    totalFeedbacks: { $sum: 1 }
                }
              },
              {$sort: {'countBytype':1}}
 
             ]
-           ).exec((err, feedback)=>{
+           ).exec((err, data)=>{
             if(err){
                 sendJSONresponse(res, 404, err)
             }else{
-                sendJSONresponse(res, 200, feedback)
+                const totalFeedbacks = data.reduce((total, doc) => total + doc.totalFeedbacks, 0); 
+                const resultWithTotal = [...data, { _id: 'total', countByType: totalFeedbacks, totalFeedbacks }];
+                sendJSONresponse(res, 200, resultWithTotal)
             }
            })
 }
@@ -289,6 +292,8 @@ module.exports.total_count_customer_by_gender = (req, res)=>{
               }
           })
 }
+
+
 
 module.exports.count_feedbacks_by_customer_gender = function(req, res){
        Feedback
@@ -319,6 +324,7 @@ module.exports.count_feedbacks_by_customer_gender = function(req, res){
                if(err){
                 sendJSONresponse(res, 401, err)
                }else{
+            
                 const totalFeedbacks = data.reduce((total, doc) => total + doc.totalFeedbacks, 0); 
                 const resultWithTotal = [...data, { _id: 'total', countByGender: totalFeedbacks, totalFeedbacks }];
                 sendJSONresponse(res, 200, resultWithTotal);
