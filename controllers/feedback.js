@@ -372,8 +372,7 @@ module.exports.counts_my_feedbacks_by_type = (req, res)=>{
 
 
 module.exports.counts_my_responded_unresponded_feedbacks = (req, res)=>{
-
-   const ObjectId = mongoose.Types.ObjectId
+     const ObjectId = mongoose.Types.ObjectId
      let userId = req.params.userId
      Feedback
        .aggregate(
@@ -383,7 +382,7 @@ module.exports.counts_my_responded_unresponded_feedbacks = (req, res)=>{
             },
             {
                 $group:{
-                    _id:'$is_responded',
+                    _id:{$toString:'$is_responded'},
                     countByIsresponded:{$count:{}},
                     totalFeedbacks: { $sum: 1 }
                 }
