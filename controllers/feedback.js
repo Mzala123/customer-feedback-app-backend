@@ -342,3 +342,60 @@ module.exports.count_feedbacks_by_customer_gender = function(req, res){
           })
 }
 
+module.exports.counts_my_feedbacks_by_type = (req, res)=>{
+     const ObjectId = mongoose.Types.ObjectId
+     let userId = req.params.userId
+     Feedback
+       .aggregate(
+        [
+            {
+                $match:{userId:{$eq:ObjectId(userId)}}
+            },
+            {
+                $group:{
+                    _id:'$type',
+                    countBytype:{$count:{}},
+                    totalFeedbacks: { $sum: 1 }
+                }
+            },
+            {$sort: {'countBytype':-1}}
+        ]).exec((err, data)=>{
+            if(err){
+                sendJSONresponse(res, 404, err)
+            }else{
+                const totalFeedbacks = data.reduce((total, doc) => total + doc.totalFeedbacks, 0); 
+                const resultWithTotal = [...data, { _id: 'total', countByType: totalFeedbacks, totalFeedbacks }];
+                sendJSONresponse(res, 200, resultWithTotal)
+            }
+        })
+}
+
+
+module.exports.counts_my_responded_unresponded_feedbacks = (req, res)=>{
+
+   const ObjectId = mongoose.Types.ObjectId
+     let userId = req.params.userId
+     Feedback
+       .aggregate(
+        [
+            {
+                $match:{userId:{$eq:ObjectId(userId)}}
+            },
+            {
+                $group:{
+                    _id:'$is_responded',
+                    countByIsresponded:{$count:{}},
+                    totalFeedbacks: { $sum: 1 }
+                }
+            },
+            {$sort: {'countByIsresponded':-1}}
+        ]).exec((err, data)=>{
+            if(err){
+                sendJSONresponse(res, 404, err)
+            }else{
+                const totalFeedbacks = data.reduce((total, doc) => total + doc.totalFeedbacks, 0); 
+                const resultWithTotal = [...data, { _id: 'total', countByType: totalFeedbacks, totalFeedbacks }];
+                sendJSONresponse(res, 200, resultWithTotal)
+            }
+        })
+}
