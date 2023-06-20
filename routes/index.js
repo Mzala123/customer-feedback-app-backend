@@ -44,14 +44,19 @@ router.get('/person', ctrlPerson.get_list_person);
 router.post('/feedback', ctrlFeedBack.create_feedback)
 router.get('/feedback_unresponded_list', ctrlFeedBack.feedback_unresponded_list)
 router.get('/feedback_responded_list', ctrlFeedBack.feedback_responded_list)
+
 router.get('/my_responded_queries_list/:userId', ctrlFeedBack.my_responded_queries_list)
 router.get('/my_unresponded_queries_list/:userId', ctrlFeedBack.my_unresponded_queries_list)
+
 router.post('/feedback/:feedbackId/create_response', ctrlFeedBack.create_response)
 
 router.get('/count_all_feedbacks', ctrlFeedBack.count_all_feedbacks)
 router.get('/count_feedbacks_by_type', ctrlFeedBack.count_feedbacks_by_type)
 router.get('/count_feedbacks_by_customer_gender', ctrlFeedBack.count_feedbacks_by_customer_gender)
 router.get('/total_count_customer_by_gender', ctrlFeedBack.total_count_customer_by_gender)
+
+// router.get('/my_responded_feedback_list/:userId', ctrlFeedBack.my_responded_feedback_list)
+// router.get('/my_unresponded_feedback_list/:userId',ctrlFeedBack.my_unresponded_feedback_list)
 
 
 

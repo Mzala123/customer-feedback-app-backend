@@ -178,7 +178,16 @@ module.exports.my_responded_queries_list = (req, res)=>{
                 description:1,
                 date_submitted: { $dateToString:{format: "%Y-%m-%d %H:%M:%S", date: "$date_submitted" } },
                 userId:1,
-                is_responded:1
+                is_responded:1,
+                response:1
+            }
+        },
+        {
+            $lookup:{
+                from: 'users',
+                localField:'userId',
+                foreignField:'_id',
+                as:'feedBackDocs'
             }
         },
         {
@@ -188,7 +197,7 @@ module.exports.my_responded_queries_list = (req, res)=>{
         if(err){
             sendJSONresponse(res, 401, err)
         }else{
-            sendJSONresponse(res, 200, data[0])
+            sendJSONresponse(res, 200, data)
         }
      })
 }
@@ -332,3 +341,4 @@ module.exports.count_feedbacks_by_customer_gender = function(req, res){
                }
           })
 }
+
