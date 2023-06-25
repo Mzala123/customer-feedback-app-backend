@@ -43,3 +43,4 @@ process.on('SIGINT', function(){
 require('./person')
 require('./users')
 require('./feedback')
+require('./image')

@@ -7,9 +7,13 @@ router.get('/', function(req, res, next) {
 });
 
 
+const upload = require('../services/upload')
+
 const ctrlAuth = require('../controllers/authentication')
 const ctrlPerson = require('../controllers/person')
 const ctrlFeedBack = require('../controllers/feedback')
+const ctrlImage = require('../controllers/image')
+
 
 //create users from personal information and login end points
 
@@ -57,6 +61,8 @@ router.get('/total_count_customer_by_gender', ctrlFeedBack.total_count_customer_
 
 router.get('/counts_my_feedbacks_by_type/:userId', ctrlFeedBack.counts_my_feedbacks_by_type)
 router.get('/counts_my_responded_unresponded_feedbacks/:userId',ctrlFeedBack.counts_my_responded_unresponded_feedbacks)
+
+router.post('/upload_image',upload.single("picture"), ctrlImage.uploadImage)
 
 
 
