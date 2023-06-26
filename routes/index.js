@@ -52,6 +52,8 @@ router.get('/feedback_responded_list', ctrlFeedBack.feedback_responded_list)
 router.get('/my_responded_queries_list/:userId', ctrlFeedBack.my_responded_queries_list)
 router.get('/my_unresponded_queries_list/:userId', ctrlFeedBack.my_unresponded_queries_list)
 
+router.get('/read_one_feedback_by_pk/:feedback_id', ctrlFeedBack.read_one_feedback_by_pk)
+
 router.post('/feedback/:feedbackId/create_response', ctrlFeedBack.create_response)
 
 router.get('/count_all_feedbacks', ctrlFeedBack.count_all_feedbacks)

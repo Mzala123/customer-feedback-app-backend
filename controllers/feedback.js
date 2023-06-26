@@ -21,6 +21,9 @@ module.exports.create_feedback = (req, res)=>{
        feedback.title = req.body.title
        feedback.description = req.body.description
        feedback.userId = req.body.userId
+       feedback.How_satisfied_are_you_with_the_accessibility_and_availability_of_the_banks_branch_network_and_ATMs = req.body.selectedRating
+       feedback.How_satisfied_are_you_with_the_level_of_security_provided_by_the_bank_for_your_transactions_and_personal_information = req.body.selectedRating1
+       feedback.How_likely_are_you_to_recommend_the_National_Bank_of_Malawi_to_family_friends_or_colleagues = req.body.selectedRating2 
 
        feedback
         .save((err)=>{
@@ -102,7 +105,10 @@ module.exports.feedback_responded_list = (req, res)=>{
                 date_submitted: { $dateToString:{format: "%Y-%m-%d %H:%M:%S", date: "$date_submitted" } },
                 userId:1,
                 is_responded:1,
-                response:1
+                response:1,
+                How_satisfied_are_you_with_the_accessibility_and_availability_of_the_banks_branch_network_and_ATMs:1,
+                How_satisfied_are_you_with_the_level_of_security_provided_by_the_bank_for_your_transactions_and_personal_information:1,
+                How_likely_are_you_to_recommend_the_National_Bank_of_Malawi_to_family_friends_or_colleagues:1
             }
         },
         {
@@ -130,7 +136,10 @@ module.exports.feedback_unresponded_list = (req, res)=>{
     Feedback
      .aggregate([
         {
-            $match:{is_responded:{$eq:false}}
+            $match:{is_responded:{$eq:false}
+            // $text: { $search: "atm customers transaction" }
+            }
+          
         },
         {
             $project:{
@@ -139,7 +148,10 @@ module.exports.feedback_unresponded_list = (req, res)=>{
                 description:1,
                 date_submitted: { $dateToString:{format: "%Y-%m-%d %H:%M:%S", date: "$date_submitted" } },
                 userId:1,
-                is_responded:1
+                is_responded:1,
+                How_satisfied_are_you_with_the_accessibility_and_availability_of_the_banks_branch_network_and_ATMs:1,
+                How_satisfied_are_you_with_the_level_of_security_provided_by_the_bank_for_your_transactions_and_personal_information:1,
+                How_likely_are_you_to_recommend_the_National_Bank_of_Malawi_to_family_friends_or_colleagues:1
             }
         },
         {
@@ -153,6 +165,9 @@ module.exports.feedback_unresponded_list = (req, res)=>{
         {
             $unwind:"$feedBackDocs"
         }
+        // {
+        //     $limit:7
+        // }
      ]).exec((err, data)=>{
         if(err){
             sendJSONresponse(res, 401, err)
@@ -179,7 +194,10 @@ module.exports.my_responded_queries_list = (req, res)=>{
                 date_submitted: { $dateToString:{format: "%Y-%m-%d %H:%M:%S", date: "$date_submitted" } },
                 userId:1,
                 is_responded:1,
-                response:1
+                response:1,
+                How_satisfied_are_you_with_the_accessibility_and_availability_of_the_banks_branch_network_and_ATMs:1,
+                How_satisfied_are_you_with_the_level_of_security_provided_by_the_bank_for_your_transactions_and_personal_information:1,
+                How_likely_are_you_to_recommend_the_National_Bank_of_Malawi_to_family_friends_or_colleagues:1
             }
         },
         {
@@ -217,8 +235,10 @@ module.exports.my_unresponded_queries_list = (req, res)=>{
                 description:1,
                 date_submitted: { $dateToString:{format: "%Y-%m-%d %H:%M:%S", date: "$date_submitted" } },
                 userId:1,
-                is_responded:1
-                 
+                is_responded:1,
+                How_satisfied_are_you_with_the_accessibility_and_availability_of_the_banks_branch_network_and_ATMs:1,
+                How_satisfied_are_you_with_the_level_of_security_provided_by_the_bank_for_your_transactions_and_personal_information:1,
+                How_likely_are_you_to_recommend_the_National_Bank_of_Malawi_to_family_friends_or_colleagues:1        
             }
         },
         {
@@ -395,6 +415,49 @@ module.exports.counts_my_responded_unresponded_feedbacks = (req, res)=>{
                 const totalFeedbacks = data.reduce((total, doc) => total + doc.totalFeedbacks, 0); 
                 const resultWithTotal = [...data, { _id: 'total', countByType: totalFeedbacks, totalFeedbacks }];
                 sendJSONresponse(res, 200, resultWithTotal)
+            }
+        })
+}
+
+module.exports.read_one_feedback_by_pk = (req, res)=>{
+      const feedback_id = req.params.feedback_id
+      const ObjectId = mongoose.Types.ObjectId
+      Feedback
+        .aggregate([
+            {
+                $match:{_id: {$eq:ObjectId(feedback_id)}}
+            },
+          
+            {
+                $project:{
+                    type:1,
+                    title:1,
+                    description:1,
+                    date_submitted: { $dateToString:{format: "%Y-%m-%d %H:%M:%S", date: "$date_submitted" } },
+                    userId:1,
+                    is_responded:1,
+                    response:1,
+                    How_satisfied_are_you_with_the_accessibility_and_availability_of_the_banks_branch_network_and_ATMs:1,
+                    How_satisfied_are_you_with_the_level_of_security_provided_by_the_bank_for_your_transactions_and_personal_information:1,
+                    How_likely_are_you_to_recommend_the_National_Bank_of_Malawi_to_family_friends_or_colleagues:1
+                }
+            },
+             {
+               $lookup:{
+                from:'users',
+                localField:'userId',
+                foreignField:'_id',
+                as:'feedbackDocs'
+               }
+            },
+            {
+                $unwind:"$feedbackDocs"
+            }
+        ]).exec((error, data)=>{
+            if(error){
+                sendJSONresponse(res, 401, error)
+            }else{
+                sendJSONresponse(res, 200, data[0])
             }
         })
 }
